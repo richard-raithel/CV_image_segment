@@ -1,0 +1,98 @@
+{#{% extends "base_generic.html" %}#}
+{##}
+{#{% block content %}#}
+{#{% load static %}#}
+{#<div class="container-fluid" style="vertical-align: 100px; margin-top: 75px; text-align: center;">#}
+{#        <h2 style="text-align: center; color: darkblue">#}
+{#            <img src="{% static 'images/Fuchs-Petrolub.png' %}" alt="Logo" height="75" width="150">#}
+{#            Sign Up for the DEFECT IDENTIFIER#}
+{#            <img src="{% static 'images/Fuchs-Petrolub.png' %}" alt="Logo" height="75" width="150">#}
+{#        </h2>#}
+{#        <form method="post">#}
+{#            {% csrf_token %}#}
+{#            {% for field in form %}#}
+{#                <p>#}
+{#                    {{ field.label_tag }} <br>#}
+{#                    {{ field }} <br>#}
+{#                    {% if field.help_text %}#}
+{#                        <small style="color: grey">{{ field.help_text }}</small>#}
+{#                    {% endif %}#}
+{#                    {% for error in field.errors %}#}
+{#                        <p style="color: red">{{ error }}</p>#}
+{#                    {% endfor %}#}
+{#                </p>#}
+{#            {% endfor %}#}
+{#            <button type="submit">Sign Up</button>#}
+{#        </form>#}
+{#</div>#}
+{#{% endblock %}#}
+
+{% extends "SampleAnalysisApp/base_template.html" %}
+{% load static %}
+{% block content %}
+
+  <header id="header" class="fixed-top">
+    <div class="container d-flex align-items-center justify-content-between">
+
+      <h1 class="logo"><a href="{% url 'index' %}">FuchsVision</a></h1>
+      <!-- Uncomment below if you prefer to use an image logo -->
+      <!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a class="nav-link scrollto active" href="{% url 'index' %}">Home</a></li>
+          <li class="dropdown"><a href="#"><span>Try Now</span> <i class="bi bi-chevron-down"></i></a>
+            <ul>
+              <li class="dropdown"><a href="#"><span>Upload an Image</span> <i class="bi bi-chevron-right"></i></a>
+                <ul>
+                  <li><a href="#">Chip</a></li>
+                  <li><a href="#comingSoonModal" data-bs-toggle="modal" data-bs-target="#comingSoonModal">Plate</a></li>
+                  <li><a href="#comingSoonModal" data-bs-toggle="modal" data-bs-target="#comingSoonModal">Bearing</a></li>
+                  <li><a href="#comingSoonModal" data-bs-toggle="modal" data-bs-target="#comingSoonModal">Gear</a></li>
+                </ul>
+              </li>
+              <li class="dropdown"><a href="#"><span>Live Capture</span> <i class="bi bi-chevron-right"></i></a>
+                <ul>
+                  <li><a href="#">Chip</a></li>
+                  <li><a href="#comingSoonModal" data-bs-toggle="modal" data-bs-target="#comingSoonModal">Plate</a></li>
+                  <li><a href="#comingSoonModal" data-bs-toggle="modal" data-bs-target="#comingSoonModal">Bearing</a></li>
+                  <li><a href="#comingSoonModal" data-bs-toggle="modal" data-bs-target="#comingSoonModal">Gear</a></li>
+                </ul>
+              </li>
+            </ul>
+          <li><a class="getstarted border-0" href="{% url 'login' %}">Log In</a></li>
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav>
+    </div>
+  </header>
+
+    <section id="portfolio" class="portfolio" style="height: auto">
+      <div class="container" data-aos="fade-up">
+        <div class="row align-items-center justify-content-center" data-aos="fade-up" data-aos-delay="300">
+          <div class="col-lg-5 col-md-5 portfolio-item filter-card">
+              <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <p>
+                        {% if field.label_tag %}
+                        <label class="form-label">{{ field.label_tag }}</label>
+                        {% endif %}
+                        <br>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small style="color: grey">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <p style="color: red">{{ error }}</p>
+                        {% endfor %}
+                    </p>
+                {% endfor %}
+                <button type="submit" class="btn-get-started border-0">Sign Up</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+{% endblock %}

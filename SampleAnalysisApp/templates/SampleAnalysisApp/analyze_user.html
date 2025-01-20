@@ -1,0 +1,155 @@
+{% extends "SampleAnalysisApp/base_template.html" %}
+{% load static %}
+{% block content %}
+
+    <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center justify-content-between">
+
+            {% if request.user %}
+                <h1 class="logo"><a href="{% url 'gallery' %}">FuchsVision</a></h1>
+            {% else %}
+                <h1 class="logo"><a href="{% url 'index' %}">FuchsVision</a></h1>
+            {% endif %}
+            <!-- Uncomment below if you prefer to use an image logo -->
+            <!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+
+            <nav id="navbar" class="navbar">
+                <ul>
+                    <li><a class="nav-link active" href="{% url 'analyze_user' %}">Analyze</a></li>
+                    <li><a class="nav-link" href="{% url 'gallery' %}">Gallery</a></li>
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <li><a class="getstarted border-0" href="{% url 'logout' %}">Log Out</a></li>
+                    </form>
+                </ul>
+                <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav>
+
+        </div>
+    </header>
+
+    <section id="portfolio" class="portfolio" style="overflow-y: hidden">
+        <div class="container" data-aos="fade-up" style="padding-top: 36px">
+
+            <div class="row align-items-center justify-content-center" data-aos="fade-up" data-aos-delay="300">
+
+                <div class="col-lg-5 col-md-5 portfolio-item filter-card">
+                    <div class="portfolio-wrap">
+                        <img src="{% static 'images/chips.jpg' %}" class="img-fluid darkened-image rounded shadow"
+                             alt="">
+                        <div class="text-center w-100"
+                             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white">
+                            <h1 class="mb-0"><strong>CHIPS</strong></h1>
+                            {#                <h4>ASTM D4627</h4>#}
+                        </div>
+                        <div class="portfolio-info">
+                            <div class="portfolio-links">
+                                <div class="row">
+                                    <a class="btn btn-light align-self-center m-1 btn-analyze" type="button"
+                                       href="{% url 'chip_corrosion_detection' %}" style="font-size: 20px; color: #2487ce">Upload
+                                        an Image</a>
+                                </div>
+                                <div class="row">
+                                    <a class="btn btn-light align-self-center m-1" type="button" href="{% url 'batch' %}"
+                                       style="font-size: 20px; color: #2487ce">Live Capture</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 col-md-5 portfolio-item filter-card">
+                    <div class="portfolio-wrap">
+                        <img src="{% static 'images/plate.jpg' %}" class="img-fluid darkened-image rounded shadow"
+                             alt="">
+                        <div class="text-center w-100"
+                             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white">
+                            <h1><strong>PLATES</strong></h1>
+                            {#                <h4>ASTM B117</h4>#}
+                        </div>
+                        <div class="portfolio-info">
+                            <div class="portfolio-links">
+                                <div class="row">
+                                    <a class="btn btn-light align-self-center m-1" type="button" data-bs-toggle="modal"
+                                       href="#comingSoonModal" style="font-size: 20px; color: #2487ce">Upload an Image</a>
+                                </div>
+                                <div class="row">
+                                    <a class="btn btn-light align-self-center m-1" type="button" data-bs-toggle="modal"
+                                       href="#comingSoonModal" style="font-size: 20px; color: #2487ce">Live Capture</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 col-md-5 portfolio-item filter-card">
+                    <div class="portfolio-wrap">
+                        <img src="{% static 'images/bearing.jpg' %}" class="img-fluid darkened-image rounded shadow"
+                             alt="">
+                        <div class="text-center w-100"
+                             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white">
+                            <h1><strong>BEARINGS</strong></h1>
+                            {#                <h4>ASTM D6138</h4>#}
+                        </div>
+                        <div class="portfolio-info">
+                            <div class="portfolio-links">
+                                <div class="row">
+                                    <a class="btn btn-light align-self-center m-1 btn-analyze" type="button"
+                                       href="{% url 'bearing_corrosion_detection' %}" style="font-size: 20px; color: #2487ce">Upload
+                                        an Image</a>
+                                </div>
+                                <div class="row">
+                                    <a class="btn btn-light align-self-center m-1" type="button" data-bs-toggle="modal"
+                                       href="#comingSoonModal" style="font-size: 20px; color: #2487ce">Live Capture</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 col-md-5 portfolio-item filter-card">
+                    <div class="portfolio-wrap">
+                        <img src="{% static 'images/gears.jpg' %}" class="img-fluid darkened-image rounded shadow"
+                             alt="">
+                        <div class="text-center w-100"
+                             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white">
+                            <h1><strong>GEARS</strong></h1>
+                            {#                <h4>ASTM D7038-22</h4>#}
+                        </div>
+                        <div class="portfolio-info">
+                            <div class="portfolio-links">
+                                <div class="row">
+                                    <a class="btn btn-light align-self-center m-1" type="button" data-bs-toggle="modal"
+                                       href="#comingSoonModal" style="font-size: 20px; color: #2487ce">Upload an Image</a>
+                                </div>
+                                <div class="row">
+                                    <a class="btn btn-light align-self-center m-1" type="button" data-bs-toggle="modal"
+                                       href="#comingSoonModal" style="font-size: 20px; color: #2487ce">Live Capture</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="comingSoonModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    </div>
+                    <div class="modal-body text-center">
+                        <h2>COMING SOON!</h2>
+                    </div>
+                    <div class="modal-footer mx-auto">
+                        <button type="button" class="btn btn-get-started" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div id="preloader" style="background-color: transparent"></div>
+
+{% endblock %}

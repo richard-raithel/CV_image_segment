@@ -1,0 +1,57 @@
+{% extends "SampleAnalysisApp/base_template.html" %}
+{% load static %}
+{% block content %}
+
+  <header id="header" class="fixed-top">
+    <div class="container d-flex align-items-center justify-content-between">
+
+      <h1 class="logo"><a href="{% url 'index' %}">FuchsVision</a></h1>
+      <!-- Uncomment below if you prefer to use an image logo -->
+      <!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a class="nav-link scrollto active" href="{% url 'index' %}">Home</a></li>
+          <li><a class="getstarted" href="#">Log In</a></li>
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav>
+    </div>
+  </header>
+
+    <section id="portfolio" class="portfolio">
+      <div class="container" data-aos="fade-up">
+
+        <div class="row align-items-center justify-content-center" data-aos="fade-up" data-aos-delay="300">
+
+          <div class="col-lg-5 col-md-5 portfolio-item filter-card">
+            <form method="post">
+                {% csrf_token %}
+
+              <div class="mb-3">
+                <input type="text" placeholder="Username" class="form-control" id="username" name="username" aria-describedby="emailHelp">
+              </div>
+              <div class="mb-3">
+                <input type="password" placeholder="Password" class="form-control" id="password" name="password">
+                <a href="{% url 'password_reset' %}">Forgot Password?</a><br>
+              </div>
+
+              <div class="text-center">
+                <button type="submit" class="btn-get-started border-0" onclick="spinner()">Submit</button><br>
+                <a class="col-4 my-auto" href="{% url 'signup' %}">Create Account</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    <div id="preloader" style="background-color: transparent"></div>
+    </section>
+
+    <script>
+    const spinner = () => {
+        const preloader = document.getElementById('preloader');
+        preloader.style.display = 'block';
+    }
+    </script>
+
+{% endblock %}

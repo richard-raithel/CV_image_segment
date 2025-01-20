@@ -1,0 +1,142 @@
+{% extends "SampleAnalysisApp/base_template.html" %}
+{% load static %}
+{% block content %}
+
+    <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center justify-content-between">
+
+            <h1 class="logo"><a href="{% url 'index' %}">FuchsVision</a></h1>
+            <!-- Uncomment below if you prefer to use an image logo -->
+            <!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+
+            <nav id="navbar" class="navbar">
+                <ul>
+                    {% if user.is_authenticated %}
+                        <li><a class="nav-link active" href="{% url 'analyze_user' %}">Analyze</a></li>
+                        <li><a class="nav-link" href="{% url 'gallery' %}">Gallery</a></li>
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <li><a class="getstarted border-0" href="{% url 'logout' %}">Log Out</a></li>
+                        </form>
+                    {% else %}
+                        <li><a class="nav-link scrollto active" href="{% url 'index' %}">Home</a></li>
+                        <li class="dropdown"><a href="#"><span>Try Now</span> <i class="bi bi-chevron-down"></i></a>
+                            <ul>
+                                <li class="dropdown"><a href="#"><span>Upload an Image</span> <i
+                                        class="bi bi-chevron-right"></i></a>
+                                    <ul>
+                                        <li><a href="{% url 'chip_corrosion_detection' %}">Chip</a></li>
+                                        <li><a href="#comingSoonModal" data-bs-toggle="modal"
+                                               data-bs-target="#comingSoonModal">Plate</a></li>
+                                        <li><a href="{% url 'chip_corrosion_detection' %}">Bearing</a></li>
+                                        <li><a href="#comingSoonModal" data-bs-toggle="modal"
+                                               data-bs-target="#comingSoonModal">Gear</a></li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown"><a href="#"><span>Live Capture</span> <i
+                                        class="bi bi-chevron-right"></i></a>
+                                    <ul>
+                                        <li><a href="{% url 'livestream' %}">Chip</a></li>
+                                        <li><a href="#comingSoonModal" data-bs-toggle="modal"
+                                               data-bs-target="#comingSoonModal">Plate</a></li>
+                                        <li><a href="#comingSoonModal" data-bs-toggle="modal"
+                                               data-bs-target="#comingSoonModal">Bearing</a></li>
+                                        <li><a href="#comingSoonModal" data-bs-toggle="modal"
+                                               data-bs-target="#comingSoonModal">Gear</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><a class="getstarted border-0" href="{% url 'login' %}">Log In</a></li>
+                    {% endif %}
+                </ul>
+                <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav>
+
+        </div>
+    </header>
+
+    <section id="portfolio" class="portfolio">
+        <div class="container py-0" data-aos="fade-up" data-aos-delay="300">
+            <div class="row align-items-center justify-content-center">
+                <div class="row" style="margin-top: 36px; margin-bottom: 36px;">
+                    <form method="post" enctype="multipart/form-data" style="text-align: center" id="image-form">
+                        {% csrf_token %}
+                        <div class="custom-file-upload">
+                            <input type="file" name="myfile" id="file-upload">
+                            <div class="row my-2 justify-content-center">
+                                <label for="file-upload" class="btn-get-started m-0" style="width: 250px">Choose Image
+                                    File</label>
+                            </div>
+                            <div class="row m-2">
+                                <span id="file-name"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <button type="submit" class="btn-get-started border-0 mx-auto" style="width: 250px"
+                                    id="submit-button">Detect
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                    {% if obb_img %}
+                        <div class="row">
+                            <div class="col-xl-6 col-lg-6 col-md-6">
+                                <div class="h-100 shadow rounded-5 text-center d-flex align-items-center justify-content-center" style="background-color: white">
+                                    <div class="m-4">
+                                        <img class="img-fluid" src="{{ obb_img }}" id="result" alt="Detected">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 py-4 py-sm-4 py-md-0 py-lg-0 py-xl-0">
+                                <div class="h-100 shadow rounded-5 text-center d-flex align-items-center justify-content-center" style="background-color: white">
+                                    <div class="col">
+                                        {% if obb_details %}
+                                            <div class="my-5">
+                                                <h2>Percent Defect</h2>
+                                                <h5> {{ obb_details }} </h5>
+                                            </div>
+                                        {% endif %}
+                                        {% if obb_metrics %}
+                                            <div class="my-5">
+                                                <h2>Rating</h2>
+                                                <h5>{{ obb_metrics.Rating }}</h5>
+                                            </div>
+                                            <div class="my-5">
+                                                <h2>Defect Counts</h2>
+                                                <h5>0-1 mm: {{ obb_metrics.Small }}</h5>
+                                                <h5>1-5 mm: {{ obb_metrics.Medium }}</h5>
+                                                <h5>5+ mm: {{ obb_metrics.Large }}</h5>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+            </div>
+        </div>
+        <div id="preloader" style="background-color: transparent"></div>
+    </section>
+
+    <script>
+        var fileInput = document.getElementById("file-upload");
+        var fileName = document.getElementById("file-name");
+
+        fileInput.addEventListener("change", function () {
+            fileName.textContent = fileInput.files[0].name;
+        });
+
+        var submitButton = document.getElementById("submit-button");
+        var imageForm = document.getElementById("image-form");
+
+        submitButton.addEventListener("click", function (event) {
+            // Prevent form submission if no file is selected
+            if (fileInput.files.length === 0) {
+                event.preventDefault();
+                alert("Please select an image file.");
+            }
+        });
+    </script>
+
+{% endblock %}

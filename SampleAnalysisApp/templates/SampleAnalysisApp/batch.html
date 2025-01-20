@@ -1,0 +1,229 @@
+{% extends "SampleAnalysisApp/base_template.html" %}
+{% load static %}
+{% load custom_tags %}
+{% block content %}
+
+    <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center justify-content-between">
+
+            <h1 class="logo"><a href="{% url 'index' %}">FuchsVision</a></h1>
+            <!-- Uncomment below if you prefer to use an image logo -->
+            <!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+
+            <nav id="navbar" class="navbar">
+                <ul>
+                    <li><a class="nav-link active" href="{% url 'analyze_user' %}">Analyze</a></li>
+                    <li><a class="nav-link" href="{% url 'gallery' %}">Gallery</a></li>
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <li><a class="getstarted border-0" href="{% url 'logout' %}">Log Out</a></li>
+                    </form>
+                </ul>
+                <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav>
+
+        </div>
+    </header>
+
+    <section id="portfolio" class="portfolio" style="height: auto; min-height: 80vh">
+        <div class="container" data-aos="fade-up" style="padding-top: 36px;">
+
+            {% csrf_token %}
+            <button class="btn-get-started border-0 shadow mx-auto" id="newBatch" style="width: 250px">New Batch
+            </button>
+
+            {% if samples %}
+                <div style="margin-top: 100px;">
+                    <div class="row d-flex justify-content-center card-deck" id="card-deck" style="margin-top: 70px">
+                        {% for key, sample in samples.items %}
+                            <div class="profile-card-4 card text-center p-0 border-0">
+                                <img src="{{ sample.src }}" id="image-{{ key }}" alt="image-{{ key }}"/>
+                                <div class="px-3">
+                                    <div class="profile-content">
+                                        <div class="row border-bottom">
+                                            <div class="col-6">
+                                                <div class="profile-overview">
+                                                    <p class="mb-1">PRODUCT</p>
+                                                    <h6 class="formulation auto-resize-text mb-0">{{ sample.Formulation }}</h6>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="profile-overview">
+                                                    <p class="mb-1">CONCENTRATION</p>
+                                                    <h6 class="concentration mb-0">{{ sample.Concentration }}</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row my-2 border-bottom">
+                                            <div class="col-4">
+                                                <div class="profile-overview">
+                                                    <p class="mb-1">USER <br>RATING</p>
+                                                    <h5 class="user_rating">{{ sample.UserRating }}</h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="profile-overview">
+                                                    <p class="mb-1">DEFECT <br>PERCENTAGE</p>
+                                                    <h5 class="percent">{{ sample.Percentage|floatformat:1 }}%</h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="profile-overview">
+                                                    <p class="mb-1">MODEL <br>RATING</p>
+                                                    <h5 class="model_rating">{{ sample.Rating }}</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="profile-overview">
+                                                    <p class="mb-1">BATCH ID</p>
+                                                    <h6 class="batch auto-resize-text mb-0">{{ sample.BatchID }}</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center" data-aos="fade-up">
+                    <button class="btn-get-started border-0 shadow mx-auto text-center" id="showVideo"
+                            style="width: 250px; display: none">Show Video
+                    </button>
+                </div>
+                <div class="row align-items-center justify-content-center" id="vidDiv" data-aos="fade-up"
+                     data-aos-delay="300">
+                    <div class="col-lg-8 col-md-8 portfolio-item filter-card" style="height: auto;" id="videoContainer">
+                        <video id="captureVideo" class="w-100 h-100" autoplay></video>
+                        <div id="overlay"></div>
+                        <div id="buttonWrapper" class="mt-4"
+                             style="display: none; position: absolute; top: 100%; transform: translate(-50%, -50%);">
+                            <button class="btn-get-started border-0 shadow mx-auto" id="imageCapture" type="button"
+                                    style="width: 250px;">Capture Image
+                            </button>
+                            <button class="btn-get-started border-0 shadow mx-auto" id="closeCapture" type="button"
+                                    style="width: 250px;">Hide Video
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="batchContainer" style="margin-top: 80px"></div>
+                <div id="batchUpload" class="row mt-4">
+                    <div class="col text-center">
+                        <button class="btn-get-started border-0 shadow mx-auto" type="submit" id="upload"
+                                style="width: 250px">Upload Batch
+                        </button>
+                    </div>
+                </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+    <div id="preloader" style="background-color: transparent"></div>
+
+    {#    <audio src="http://www.soundjay.com/mechanical/camera-shutter-click-08.mp3"></audio>#}
+
+    <script>
+        const batchSubmitUrl = '{% url "batchSubmit" %}';
+        const refreshURL = '{% url "reset_session_data" %}';
+    </script>
+
+    <script>
+        // Get the "Capture Image" button element
+        var captureImageButton = document.getElementById('imageCapture');
+
+        // Get the circle div element
+        var circleDiv = document.getElementById('overlay');
+
+        // Add a click event listener to the button
+        captureImageButton.addEventListener('click', function () {
+            // Trigger the camera shutter flash effect
+            triggerCameraShutterFlash();
+        });
+
+        // Function to trigger the camera shutter flash effect
+        function triggerCameraShutterFlash() {
+            // Get the position and size of the circle div
+            var circleRect = circleDiv.getBoundingClientRect();
+            var circleTop = circleRect.top;
+            var circleLeft = circleRect.left;
+            var circleWidth = circleRect.width;
+            var circleHeight = circleRect.height;
+
+            // Create a div element for the flash effect
+            var flashDiv = document.createElement('div');
+            flashDiv.style.width = circleWidth + 'px';
+            flashDiv.style.height = circleHeight + 'px';
+            flashDiv.style.backgroundColor = 'black';
+            flashDiv.style.borderRadius = '50%'; // Set border radius to 50%
+            flashDiv.style.position = 'fixed';
+            flashDiv.style.top = circleTop + 'px';
+            flashDiv.style.left = circleLeft + 'px';
+            flashDiv.style.opacity = '0';
+            flashDiv.style.transition = 'opacity 0.05s';
+
+            // Append the flash div to the body element
+            document.body.appendChild(flashDiv);
+
+            // Set a timeout to increase the opacity of the flash div
+            setTimeout(function () {
+                flashDiv.style.opacity = '.5';
+            }, 10);
+
+            // Play camera shutter sound effect
+            var shutterSound = new Audio('http://www.soundjay.com/mechanical/camera-shutter-click-08.mp3'); // Replace with the path to your shutter sound file
+            shutterSound.play();
+
+            // Set a timeout to decrease the opacity of the flash div and remove it
+            setTimeout(function () {
+                flashDiv.style.opacity = '0';
+                setTimeout(function () {
+                    document.body.removeChild(flashDiv);
+                }, 200);
+            }, 200);
+        }
+    </script>
+
+    <script>
+        // Wait for the DOM to be ready
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get the batchContainer and upload button elements
+            var batchContainer = document.getElementById("batchContainer");
+            var uploadButton = document.getElementById("upload");
+
+            // Hide the upload button initially
+            uploadButton.style.display = "none";
+
+            // Check if batchContainer has child elements
+            function checkChildElements() {
+                if (batchContainer.children.length > 0) {
+                    // If batchContainer has child elements, show the upload button
+                    uploadButton.style.display = "block";
+                } else {
+                    // If batchContainer does not have child elements, hide the upload button
+                    uploadButton.style.display = "none";
+                }
+            }
+
+            // Call the checkChildElements function initially
+            checkChildElements();
+
+            // Whenever the batchContainer is modified, check the child elements again
+            var observer = new MutationObserver(function () {
+                checkChildElements();
+            });
+
+            observer.observe(batchContainer, {childList: true});
+        });
+    </script>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'js/batch.js' %}" type="text/javascript"></script>
+{% endblock %}

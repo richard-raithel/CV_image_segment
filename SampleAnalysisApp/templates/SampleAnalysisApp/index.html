@@ -1,0 +1,571 @@
+{% extends "SampleAnalysisApp/base_template.html" %}
+{% load static %}
+{% block content %}
+
+    <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center justify-content-between">
+
+            <h1 class="logo"><a href="{% url 'index' %}">FuchsVision</a></h1>
+            <!-- Uncomment below if you prefer to use an image logo -->
+            <!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+
+            <nav id="navbar" class="navbar">
+                <ul>
+                    {% if user.is_authenticated %}
+                        <li><a class="nav-link active" href="{% url 'analyze_user' %}">Analyze</a></li>
+                        <li><a class="nav-link" href="{% url 'gallery' %}">Gallery</a></li>
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <li><a class="getstarted border-0" href="{% url 'logout' %}">Log Out</a></li>
+                        </form>
+                    {% else %}
+                        <li><a class="nav-link scrollto active" href="{% url 'index' %}">Home</a></li>
+                        <li class="dropdown"><a href="#"><span>Try Now</span> <i class="bi bi-chevron-down"></i></a>
+                            <ul>
+                                <li class="dropdown"><a href="#"><span>Upload an Image</span> <i
+                                        class="bi bi-chevron-right"></i></a>
+                                    <ul>
+                                        <li><a href="{% url 'chip_corrosion_detection' %}">Chip</a></li>
+                                        <li><a href="#comingSoonModal" data-bs-toggle="modal"
+                                               data-bs-target="#comingSoonModal">Plate</a></li>
+                                        <li><a href="{% url 'bearing_corrosion_detection' %}">Bearing</a></li>
+                                        <li><a href="#comingSoonModal" data-bs-toggle="modal"
+                                               data-bs-target="#comingSoonModal">Gear</a></li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown"><a href="#"><span>Live Capture</span> <i
+                                        class="bi bi-chevron-right"></i></a>
+                                    <ul>
+                                        <li><a href="{% url 'livestream' %}">Chip</a></li>
+                                        <li><a href="#comingSoonModal" data-bs-toggle="modal"
+                                               data-bs-target="#comingSoonModal">Plate</a></li>
+                                        <li><a href="#comingSoonModal" data-bs-toggle="modal"
+                                               data-bs-target="#comingSoonModal">Bearing</a></li>
+                                        <li><a href="#comingSoonModal" data-bs-toggle="modal"
+                                               data-bs-target="#comingSoonModal">Gear</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><a class="getstarted border-0" href="{% url 'login' %}">Log In</a></li>
+                    {% endif %}
+                </ul>
+                <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav>
+
+        </div>
+    </header>
+
+    <!-- ======= Hero Section ======= -->
+    <section id="hero" class="d-flex align-items-center">
+        <div class="container position-relative" data-aos="fade-up" data-aos-delay="100">
+            <div class="row justify-content-center">
+                <div class="col-xl-7 col-lg-9 text-center">
+                    <h1>Computer Vision for Surface Analysis</h1>
+                    <h2>Our proprietary system will allow you to increase speed and remove subjectivity from Surface
+                        Analysis testing for chips, plates, bearings and gears. Click the button below to try our system
+                        now.</h2>
+                </div>
+            </div>
+            <div class="text-center">
+                <a href="{% url 'analyze_test' %}" class="btn-get-started">Try Now</a>
+            </div>
+
+            <div class="row icon-boxes">
+                <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0" data-aos="zoom-in"
+                     data-aos-delay="200">
+                    <div class="icon-box" data-image1="{% static 'images/index_examples/chip1.png' %}"
+                         data-image2="{% static 'images/index_examples/chip2.png' %}">
+                        <div class="icon"><i class="ri-focus-line"></i></div>
+                        <h4 class="title" style="color: #124265">Chips</h4>
+                        <p class="description">Analyze filter papers from the ASTM D4627 test to accurately and
+                            efficiently report corrosion percent and rating</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0" data-aos="zoom-in"
+                     data-aos-delay="300">
+                    <div class="icon-box" data-image1="{% static 'images/index_examples/plates1.png' %}"
+                         data-image2="{% static 'images/index_examples/plates2.png' %}">
+                        <div class="icon"><i class="ri-tablet-line"></i></div>
+                        <h4 class="title" style="color: #124265">Plates</h4>
+                        <p class="description">Analyze plates from the ASTM B117 test to pinpoint the severity of
+                            corrosion via an rga color analysis</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0" data-aos="zoom-in"
+                     data-aos-delay="400">
+                    <div class="icon-box" data-image1="{% static 'images/index_examples/bearing1.png' %}"
+                         data-image2="{% static 'images/index_examples/bearing2.png' %}">
+                        <div class="icon"><i class="ri-lifebuoy-line"></i></div>
+                        <h4 class="title" style="color: #124265">Bearings</h4>
+                        <p class="description">Analyze EMCOR bearings from the ASTM D6138 test for rating, corrosion and
+                            staining percentages</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0" data-aos="zoom-in"
+                     data-aos-delay="500">
+                    <div class="icon-box" data-image1="{% static 'images/index_examples/gear1.png' %}"
+                         data-image2="{% static 'images/index_examples/gear2.png' %}">
+                        <div class="icon"><i class="ri-settings-5-fill"></i></div>
+                        <h4 class="title" style="color: #124265">Gears</h4>
+                        <p class="description">Analyze gears from the ASTM D7038-22 test for corrosion percent</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <!-- End Hero -->
+
+    <main id="main">
+
+        <!-- ======= About Section ======= -->
+        <section id="about" class="about section-bg">
+            <div class="container" data-aos="fade-up">
+                <div class="section-title">
+                    <h2>About Us</h2>
+                    <p>A small but innovative team of data scientists and computer vision engineers attempting to change
+                        the lubricant industry.</p>
+                </div>
+                <div class="row content">
+                    <div class="col-lg-6">
+                        <p>
+                            Aspiring to increase efficiency and accuracy for testing laboratories around the world, we
+                            have created very flexible models that are capable of:
+                        </p>
+                        <ul>
+                            <li><i class="ri-check-double-line"></i> Highlighting corrosion and staining</li>
+                            <li><i class="ri-check-double-line"></i> Reporting a percentage and the number of instances
+                            </li>
+                            <li><i class="ri-check-double-line"></i> Reporting an ASTM rating if applicable</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6 pt-4 pt-lg-0">
+                        <p>
+                            Cutting edge techniques such as pix2pix synthetic data generation and MaskRCNN's were used
+                            to build this product. With only ~100 original images
+                            for each sample type, we were able to generate synthetic data to represent tens of thousands
+                            of unique images. Once these images were generated,
+                            a MaskRCNN was trained to recognize and highlight defects such as corrosion and staining.
+                        </p>
+                        <a href="#" class="btn-learn-more">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- End About Section -->
+
+        <!-- ======= Cta Section ======= -->
+        {#    <section id="cta" class="cta">#}
+        {#      <div class="container" data-aos="zoom-in">#}
+        {#        <div class="text-center">#}
+        {#          <h3>Call To Action</h3>#}
+        {#          <p> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>#}
+        {#          <a class="cta-btn" href="#">Call To Action</a>#}
+        {#        </div>#}
+        {#      </div>#}
+        {#    </section>#}
+        <!-- End Cta Section -->
+
+        <!-- ======= Team Section ======= -->
+        <section id="team" class="team">
+            <div class="container" data-aos="fade-up">
+                <div class="section-title">
+                    <h2>Team</h2>
+                    <p>Our team may be small, but we get results. Our product is not only limited to the current trained
+                        models, so give us a new problem to solve and we'll get to work.</p>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
+                        <div class="member">
+                            <div class="member-img">
+                                <img src="{% static 'assets/img/team/headshot_rich.png' %}" class="img-fluid" alt="">
+                                <div class="social">
+                                    <a href=""><i class="bi bi-twitter"></i></a>
+                                    <a href=""><i class="bi bi-facebook"></i></a>
+                                    <a href=""><i class="bi bi-instagram"></i></a>
+                                    <a href=""><i class="bi bi-linkedin"></i></a>
+                                </div>
+                            </div>
+                            <div class="member-info">
+                                <h4>Richard Bellizzi</h4>
+                                <span>Senior Data Science Engineer</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
+                        <div class="member">
+                            <div class="member-img">
+                                <img src="{% static 'assets/img/team/headshot_toby.png' %}" class="img-fluid" alt="">
+                                <div class="social">
+                                    <a href=""><i class="bi bi-twitter"></i></a>
+                                    <a href=""><i class="bi bi-facebook"></i></a>
+                                    <a href=""><i class="bi bi-instagram"></i></a>
+                                    <a href=""><i class="bi bi-linkedin"></i></a>
+                                </div>
+                            </div>
+                            <div class="member-info">
+                                <h4>Tobias Wolf</h4>
+                                <span>Computer Vision Engineer</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
+                        <div class="member">
+                            <div class="member-img">
+                                <img src="{% static 'assets/img/team/headshot_richie.jpg' %}" class="img-fluid" alt="">
+                                <div class="social">
+                                    <a href=""><i class="bi bi-twitter"></i></a>
+                                    <a href=""><i class="bi bi-facebook"></i></a>
+                                    <a href=""><i class="bi bi-instagram"></i></a>
+                                    <a href=""><i class="bi bi-linkedin"></i></a>
+                                </div>
+                            </div>
+                            <div class="member-info">
+                                <h4>Richard Raithel</h4>
+                                <span>Senior Data Science Engineer</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- End Team Section -->
+
+        <!-- ======= Frequently Asked Questions Section ======= -->
+        <section id="faq" class="faq section-bg">
+            <div class="container" data-aos="fade-up">
+                <div class="section-title">
+                    <h2>Frequently Asked Questions</h2>
+                    {#          <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p>#}
+                </div>
+                <div class="faq-list">
+                    <ul>
+                        <li data-aos="fade-up">
+                            <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" class="collapse"
+                                                                           data-bs-target="#faq-list-1">What is Computer
+                            Vision?<i class="bx bx-chevron-down icon-show"></i><i
+                                    class="bx bx-chevron-up icon-close"></i></a>
+                            <div id="faq-list-1" class="collapse show" data-bs-parent=".faq-list">
+                                <p>Computer vision is a field of study that focuses on enabling machines to interpret
+                                    and understand the visual world. It involves the development of algorithms and
+                                    techniques to enable computers to recognize and analyze visual data from images or
+                                    video in order to extract information or make decisions.</p>
+                                <p>Computer vision has many practical applications, including object recognition, image
+                                    segmentation, face detection, gesture recognition, and autonomous vehicle
+                                    navigation. It is used in a wide range of industries, such as healthcare,
+                                    transportation, entertainment, and security.</p>
+                                <p>Computer vision techniques typically involve the use of machine learning algorithms,
+                                    such as convolutional neural networks (CNNs), to train models to recognize patterns
+                                    and features in visual data. These models are then used to analyze new data and make
+                                    predictions or decisions based on what they have learned.</p>
+                            </div>
+                        </li>
+                        <li data-aos="fade-up" data-aos-delay="100">
+                            <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse"
+                                                                           data-bs-target="#faq-list-2"
+                                                                           class="collapsed">How can Computer Vision
+                            help my business?<i class="bx bx-chevron-down icon-show"></i><i
+                                    class="bx bx-chevron-up icon-close"></i></a>
+                            <div id="faq-list-2" class="collapse content" data-bs-parent=".faq-list">
+                                <p><strong>Automating repetitive tasks:</strong> Laboratory testing often involves
+                                    repetitive tasks, such as counting cells or identifying specific features in images.
+                                    Computer vision algorithms can be trained to automate these tasks, saving time and
+                                    reducing the risk of human error</p>
+                                <p><strong>Improving accuracy:</strong> Computer vision algorithms can analyze large
+                                    amounts of data and identify subtle patterns or anomalies that may be difficult for
+                                    humans to detect. This can help improve the accuracy and reliability of laboratory
+                                    testing results</p>
+                                <p><strong>Enhancing speed:</strong> Computer vision algorithms can process images and
+                                    data much faster than humans, allowing for faster turnaround times in laboratory
+                                    testing</p>
+                                <p><strong>Enabling remote testing:</strong> With the help of computer vision,
+                                    laboratory testing can be done remotely, allowing businesses to reach a wider
+                                    audience and expand their services</p>
+                                <p><strong>Supporting research and development:</strong> Computer vision can aid in the
+                                    development of new laboratory testing methods and techniques, by automating tasks
+                                    and helping researchers identify new patterns and trends in data</p>
+                            </div>
+                        </li>
+                        <li data-aos="fade-up" data-aos-delay="200">
+                            <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse"
+                                                                           data-bs-target="#faq-list-3"
+                                                                           class="collapsed">How do I know if this is a
+                            tool that is right for my business?<i class="bx bx-chevron-down icon-show"></i><i
+                                    class="bx bx-chevron-up icon-close"></i></a>
+                            <div id="faq-list-3" class="collapse" data-bs-parent=".faq-list">
+                                <p>To determine if computer vision is a good fit for a business problem, the following
+                                    steps can be taken:</p>
+                                <p><strong>Define the problem:</strong> Clearly define the business problem that needs
+                                    to be solved. Identify the data sources and the specific tasks that need to be
+                                    performed</p>
+                                <p><strong>Determine the feasibility:</strong> Assess whether computer vision is
+                                    technically feasible for solving the problem. Consider factors such as the quality
+                                    and quantity of data, the complexity of the problem, and the availability of
+                                    existing solutions</p>
+                                <p><strong>Evaluate the benefits:</strong> Determine the potential benefits of using
+                                    computer vision for the business problem. Consider factors such as increased
+                                    efficiency, improved accuracy, reduced costs, and expanded capabilities</p>
+                                <p><strong>Assess the risks:</strong> Identify the potential risks associated with using
+                                    computer vision for the business problem. Consider factors such as data privacy and
+                                    security, the need for specialized expertise, and the potential for bias or errors
+                                </p>
+                                <p><strong>Evaluate the costs:</strong> Assess the costs associated with implementing
+                                    computer vision for the business problem. Consider factors such as the cost of data
+                                    acquisition and storage, the cost of hardware and software, and the cost of hiring
+                                    specialized expertise</p>
+                                <p><strong>Consider alternatives:</strong> Evaluate alternative solutions to the
+                                    business problem, such as manual processes or other types of automation</p>
+                                <p><strong>Make a decision:</strong> Based on the above factors, make a decision on
+                                    whether computer vision is a good fit for the business problem. If it is a good fit,
+                                    then determine the specific approach and resources needed to implement the solution
+                                </p>
+                                <p>By going through these steps, businesses can determine whether computer vision is a
+                                    good fit for their specific business problem and make an informed decision on
+                                    whether to pursue this technology</p>
+                            </div>
+                        </li>
+                        <li data-aos="fade-up" data-aos-delay="300">
+                            <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse"
+                                                                           data-bs-target="#faq-list-4"
+                                                                           class="collapsed">How long does it take from
+                            start to finish to train a model for a new product?<i
+                                    class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                            <div id="faq-list-4" class="collapse" data-bs-parent=".faq-list">
+                                <p>The time it takes to train and deploy a new computer vision model can vary depending
+                                    on several factors, such as the complexity of the model, the size of the dataset,
+                                    and the resources available for training and deployment
+                                    Here is a general overview of the steps involved in the process and the time it may
+                                    take for each step:</p>
+                                <p><strong>Data collection and preprocessing:</strong> Collecting and preparing the data
+                                    can take several days to several weeks, depending on the amount and quality of data
+                                    available.</p>
+                                <p><strong>Model selection and architecture design:</strong> Selecting an appropriate
+                                    model and designing its architecture can take several days to several weeks,
+                                    depending on the complexity of the problem and the desired accuracy</p>
+                                <p><strong>Model training:</strong> The time required for model training depends on the
+                                    size of the dataset, the complexity of the model, and the resources available for
+                                    training. Training a model can take anywhere from several hours to several weeks</p>
+                                <p><strong>Model evaluation:</strong> The model must be evaluated on a separate test
+                                    dataset to ensure that it is accurate and generalizes well to new data. Model
+                                    evaluation can take several days</p>
+                                <p><strong>Deployment:</strong> Deploying the model involves integrating it into an
+                                    application or system. The time required for deployment can vary depending on the
+                                    complexity of the deployment infrastructure and the requirements of the application
+                                    or system</p>
+                                <p>In general, the entire process of training and deploying a new computer vision model
+                                    can take several weeks to several months, depending on the factors mentioned above.
+                                    However, the time required can be reduced by using pre-trained models or cloud-based
+                                    services that provide pre-built models and deployment infrastructure</p>
+                            </div>
+                        </li>
+                        <li data-aos="fade-up" data-aos-delay="400">
+                            <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse"
+                                                                           data-bs-target="#faq-list-5"
+                                                                           class="collapsed">How much does it cost?<i
+                                class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                            <div id="faq-list-5" class="collapse" data-bs-parent=".faq-list">
+                                <p>Please reach out to a Fuchs representative at 1.508.996.6721 to discuss your unique
+                                    business needs</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <!-- End Frequently Asked Questions Section -->
+
+        <!-- ======= Contact Section ======= -->
+        <section id="contact" class="contact">
+            <div class="container" data-aos="fade-up">
+                <div class="section-title">
+                    <h2>Contact</h2>
+                    {#          <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p>#}
+                </div>
+                <div>
+                    <iframe style="border:0; width: 100%; height: 270px;"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2980.9049745763755!2d-70.91532038444441!3d41.65779508715066!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e4e418de67e889%3A0x2f8a3914867f27b4!2sNye%20Lubricants%20Inc!5e0!3m2!1sen!2sus!4v1679510251732!5m2!1sen!2sus"
+                            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                <div class="row mt-5">
+                    <div class="col-lg-4">
+                        <div class="info">
+                            <div class="address">
+                                <i class="bi bi-geo-alt"></i>
+                                <h4>Location:</h4>
+                                <p>12 Howland Rd, Fairhaven, Ma 02718</p>
+                            </div>
+                            <div class="email">
+                                <i class="bi bi-envelope"></i>
+                                <h4>Email:</h4>
+                                <p>insight@nyelubricants.com</p>
+                            </div>
+                            <div class="phone">
+                                <i class="bi bi-phone"></i>
+                                <h4>Call:</h4>
+                                <p>1.508.996.6721</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8 mt-5 mt-lg-0">
+                        <form action="forms/contact.php" method="post" role="form" class="php-email-form">
+                            <div class="row gy-2 gx-md-3">
+                                <div class="col-md-6 form-group">
+                                    <input type="text" name="name" class="form-control" id="name"
+                                           placeholder="Your Name" required>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <input type="email" class="form-control" name="email" id="email"
+                                           placeholder="Your Email" required>
+                                </div>
+                                <div class="form-group col-12">
+                                    <input type="text" class="form-control" name="subject" id="subject"
+                                           placeholder="Subject" required>
+                                </div>
+                                <div class="form-group col-12">
+                                    <textarea class="form-control" name="message" rows="5" placeholder="Message"
+                                              required></textarea>
+                                </div>
+                                <div class="my-3 col-12">
+                                    <div class="loading">Loading</div>
+                                    <div class="error-message"></div>
+                                    <div class="sent-message">Your message has been sent. Thank you!</div>
+                                </div>
+                                <div class="text-center col-12">
+                                    <button type="submit">Send Message</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        <!-- End Contact Section -->
+
+        <!-- Modal -->
+        <div class="modal fade" id="comingSoonModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    </div>
+                    <div class="modal-body text-center">
+                        <h2>COMING SOON!</h2>
+                    </div>
+                    <div class="modal-footer mx-auto">
+                        <button type="button" class="btn btn-get-started" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <!-- End #main -->
+
+    <!-- ======= Footer ======= -->
+    {#  <footer id="footer">#}
+    {##}
+    {#    <div class="footer-top">#}
+    {#      <div class="container">#}
+    {#        <div class="row">#}
+    {##}
+    {#          <div class="col-lg-3 col-md-6 footer-contact">#}
+    {#            <h3>OnePage</h3>#}
+    {#            <p>#}
+    {#              A108 Adam Street <br>#}
+    {#              New York, NY 535022<br>#}
+    {#              United States <br><br>#}
+    {#              <strong>Phone:</strong> +1 5589 55488 55<br>#}
+    {#              <strong>Email:</strong> info@example.com<br>#}
+    {#            </p>#}
+    {#          </div>#}
+    {##}
+    {#          <div class="col-lg-2 col-md-6 footer-links">#}
+    {#            <h4>Useful Links</h4>#}
+    {#            <ul>#}
+    {#              <li><i class="bx bx-chevron-right"></i> <a href="#">Home</a></li>#}
+    {#              <li><i class="bx bx-chevron-right"></i> <a href="#">About us</a></li>#}
+    {#              <li><i class="bx bx-chevron-right"></i> <a href="#">Services</a></li>#}
+    {#              <li><i class="bx bx-chevron-right"></i> <a href="#">Terms of service</a></li>#}
+    {#              <li><i class="bx bx-chevron-right"></i> <a href="#">Privacy policy</a></li>#}
+    {#            </ul>#}
+    {#          </div>#}
+    {##}
+    {#          <div class="col-lg-3 col-md-6 footer-links">#}
+    {#            <h4>Our Services</h4>#}
+    {#            <ul>#}
+    {#              <li><i class="bx bx-chevron-right"></i> <a href="#">Web Design</a></li>#}
+    {#              <li><i class="bx bx-chevron-right"></i> <a href="#">Web Development</a></li>#}
+    {#              <li><i class="bx bx-chevron-right"></i> <a href="#">Product Management</a></li>#}
+    {#              <li><i class="bx bx-chevron-right"></i> <a href="#">Marketing</a></li>#}
+    {#              <li><i class="bx bx-chevron-right"></i> <a href="#">Graphic Design</a></li>#}
+    {#            </ul>#}
+    {#          </div>#}
+    {##}
+    {#          <div class="col-lg-4 col-md-6 footer-newsletter">#}
+    {#            <h4>Join Our Newsletter</h4>#}
+    {#            <p>Tamen quem nulla quae legam multos aute sint culpa legam noster magna</p>#}
+    {#            <form action="" method="post">#}
+    {#              <input type="email" name="email"><input type="submit" value="Subscribe">#}
+    {#            </form>#}
+    {#          </div>#}
+    {##}
+    {#        </div>#}
+    {#      </div>#}
+    {#    </div>#}
+    {#  </footer>#}
+    <!-- End Footer -->
+
+    <div id="preloader"></div>
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+
+    <!-- Modal -->
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                </div>
+                <div class="modal-body text-center" id="infoModalBody">
+                    <div class="row">
+                        <div class="col-6">
+                            <img class="img-fluid" src="" id="modalImage1" alt="Image 1">
+                        </div>
+                        <div class="col-6">
+                            <img class="img-fluid" src="" id="modalImage2" alt="Image 2">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer mx-auto">
+                    <button type="button" class="btn btn-get-started" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Add a click event listener to each option
+            $('.icon-box').on('click', function () {
+                // Get the clicked option's image srcs
+                var imageSrc1 = $(this).attr('data-image1');
+                var imageSrc2 = $(this).attr('data-image2');
+
+                // Update the modal's image srcs
+                $('#modalImage1').attr('src', imageSrc1);
+                $('#modalImage2').attr('src', imageSrc2);
+
+                // Open the modal
+                $('#infoModal').modal('show');
+            });
+        });
+    </script>
+
+{% endblock content %}
